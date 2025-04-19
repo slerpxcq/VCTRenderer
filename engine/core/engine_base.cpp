@@ -71,6 +71,11 @@ void EngineBase::MainLoop() const
         Interface::DrawAll();
         // behaviors update
         Behavior::UpdateAll();
+
+        // load model
+
+
+
         // call renderers
         Renderer::RenderAll();
         // ui render over scene

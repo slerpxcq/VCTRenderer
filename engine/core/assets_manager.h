@@ -48,6 +48,7 @@ class AssetsManager
         /// </summary>
         std::map<std::string, std::shared_ptr<Renderer>> renderers;
 
+
         // No copying, copy, move assignment allowed of this class
         // or any derived class
         AssetsManager(AssetsManager const &r) = delete;

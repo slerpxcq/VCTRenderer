@@ -80,6 +80,8 @@ AssetsManager::AssetsManager()
                          ("assets\\models\\lightbox\\LightBox01.obj");
     scenes["Test Plane"] = std::make_shared<Scene>
                            ("assets\\models\\lightbox\\TestPlane.obj");
+
+
     // instantiate implemented interfaces
     interfaces["SceneLoader"] = std::make_shared<UISceneLoader>();
     interfaces["Framerate"] = std::make_shared<UIFramerate>();
@@ -149,7 +151,7 @@ AssetsManager::AssetsManager()
                                    "assets\\shaders\\blur.frag");
     programs["ClearDynamic"]->AttachShader(oglplus::ShaderType::Compute,
                                            "assets\\shaders\\clear_dynamic.comp");
-
+    
     // link and extract uniforms from shaders
     for (auto &prog : programs)
     {

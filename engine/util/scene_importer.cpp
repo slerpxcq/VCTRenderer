@@ -341,7 +341,7 @@ void SceneImporter::ImportMaterialTextures(Scene * scene,
         if (mMaterial->GetTexture(static_cast<aiTextureType>(texType), 0,
                                   &texPath) == AI_SUCCESS)
         {
-            auto filepath = scene->directory + "\\" + std::string(texPath.data);
+            auto filepath = scene->directory + "\\" + std::string(texPath.C_Str());
             // find if texture was already loaded previously
             bool alreadyLoaded = false;
             int savedTextureIndex = 0;
