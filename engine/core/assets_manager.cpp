@@ -3,6 +3,8 @@
 #include <GL/glew.h>
 #include <GLFW/glfw3.h>
 
+#include <iostream>
+
 #include "../scene/texture.h"
 #include "../scene/scene.h"
 #include "../rendering/primitives/shapes.h"
@@ -155,6 +157,7 @@ AssetsManager::AssetsManager()
     // link and extract uniforms from shaders
     for (auto &prog : programs)
     {
+        std::cout << "Linking shader program " << prog.first << '\n';
         prog.second->Link();
         prog.second->ExtractUniforms();
     }

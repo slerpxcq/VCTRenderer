@@ -2,5 +2,10 @@
 - [ ] PMX loading 
   - [x] update assimp
   - [ ] load model to the scene
-- [ ] Free camera
+    - [x] Scene loading node trasform scale is wrong
+    - [ ] load pmx with assimp
+- [x] Free camera
 - [ ] Skinning 
+  - [ ] load vmd animation
+- [ ] IK
+- [ ] Shape keys

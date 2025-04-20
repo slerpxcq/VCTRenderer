@@ -2,6 +2,9 @@
 
 #include <GL/glew.h>
 #include <GLFW/glfw3.h>
+
+#include <glm/gtx/matrix_decompose.hpp>
+
 #include "texture_importer.h"
 #include "../scene/scene.h"
 #include "../scene/material.h"
@@ -109,6 +112,9 @@ bool SceneImporter::Import(const std::string &filepath, Scene * scene,
     {
         scene->lights.push_back(std::make_shared<Light>());
     }
+
+    // Test transform
+
 
     importer.FreeScene();
     return true;
@@ -306,11 +312,18 @@ void SceneImporter::ProcessNodes(Scene * scene, aiNode * mNode, Node &node)
     }
 
     // transformation matrix decomposition using assimp implementation
-    aiVector3D pos; aiVector3D sca; aiQuaternion rot;
-    mNode->mTransformation.Decompose(sca, rot, pos);
-    node.transform.Position(glm::vec3(pos.x, pos.y, pos.z));
-    node.transform.Scale(glm::vec3(sca.x, sca.y, sca.z));
-    node.transform.Rotation(glm::quat(rot.w, rot.x, rot.y, rot.z));
+    // aiVector3D pos; aiVector3D sca; aiQuaternion rot;
+    // mNode->mTransformation.Decompose(sca, rot, pos);
+    // Force identity
+
+    // BUG: assimp implementation is wrong
+    // node.transform.Scale(glm::vec3(sca.x, sca.y, sca.z));
+    // node.transform.Position(glm::vec3(pos.x, pos.y, pos.z));
+    // node.transform.Scale(glm::vec3(1));
+    // node.transform.Rotation(glm::quat(rot.w, rot.x, rot.y, rot.z));
+    node.transform.Scale(glm::vec3(1));
+    node.transform.Position(glm::vec3(0));
+    node.transform.Rotation(glm::quat());
     // build per node draw lists from recursive draw
     // useful for easier batching
     node.BuildDrawList();
@@ -341,7 +354,11 @@ void SceneImporter::ImportMaterialTextures(Scene * scene,
         if (mMaterial->GetTexture(static_cast<aiTextureType>(texType), 0,
                                   &texPath) == AI_SUCCESS)
         {
-            auto filepath = scene->directory + "\\" + std::string(texPath.C_Str());
+            uint32_t texPathStart{};
+            const char* texPathStr = texPath.C_Str();
+            while (texPathStr[texPathStart] == '\0')
+                ++texPathStart;
+            auto filepath = scene->directory + "\\" + std::string(&texPathStr[texPathStart]);
             // find if texture was already loaded previously
             bool alreadyLoaded = false;
             int savedTextureIndex = 0;

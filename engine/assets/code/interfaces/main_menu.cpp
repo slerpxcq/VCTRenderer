@@ -3,6 +3,8 @@
 #include "main_menu.h"
 
 #include <iostream>
+#include <filesystem>
+#include <fstream>
 
 #include "../renderers/voxelizer_renderer.h"
 #include "../../../rendering/render_window.h"
@@ -30,22 +32,44 @@ static void PrintSceneGraph(std::shared_ptr<Node> node, uint32_t level = 0)
     for (uint32_t i = 0; i < level; ++i)
         std::cout << ' ';
 
-    std::cout << node->name << std::endl;
+    std::cout << node->name << '\n';
 
     for (auto child : node->nodes) {
         PrintSceneGraph(child, level + 1);
     }
 }
 
+static void PrintModelNodes(const aiNode* node, uint32_t level = 0)
+{
+	for (uint32_t i = 0; i < level; ++i)
+		std::cout << ' ';
+
+    std::cout << node->mName.C_Str() << '\n';
+
+    for (uint32_t i = 0; i < node->mNumChildren; ++i) {
+        PrintModelNodes(node->mChildren[i], level + 1);
+    }
+}
+
 static void ImportModel(std::unique_ptr<Scene>& scene)
 {
     Assimp::Importer importer;
-    auto model = importer.ReadFile("assets\\models\\つみ式ミクさんv4\\つみ式ミクさんv4.pmx",
-                                   aiProcess_Triangulate);
+    std::ifstream ifs(u8"assets\\models\\つみ式ミクさんv4\\つみ式ミクさんv4.pmx", 
+                      std::ios::binary | std::ios::ate);
+    assert(ifs.is_open());
+    auto fileSize = ifs.tellg();
+    ifs.seekg(0, std::ios::beg);
+
+    std::vector<char> buf(fileSize);
+    ifs.read(buf.data(), fileSize);
+
+    auto model = importer.ReadFileFromMemory(buf.data(), buf.size(),
+                                             aiProcess_Triangulate,
+                                             "pmx");
     assert(model);
 
-    // print all nodes in the 
-    model->mRootNode->mChildren;
+    // print all nodes in the model
+    PrintModelNodes(model->mRootNode);
 }
 
 void UIMainMenu::Draw()
@@ -77,7 +101,7 @@ void UIMainMenu::Draw()
 					PrintSceneGraph(scene->rootNode);
                     ImportModel(scene);
                 } else {
-                    std::cout << "A scene must be loaded to load a model.\n";
+                    std::cerr << "A scene must be loaded to load a model.\n";
                 }
             }
             EndMenu();

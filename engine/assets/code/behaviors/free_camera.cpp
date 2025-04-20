@@ -6,19 +6,24 @@
 #include "../rendering/render_window.h"
 #include "../../../scene/scene.h"
 
+void FreeCamera::Update2()
+{
+}
+
 void FreeCamera::Update()
 {
-    static auto enabled = false;
+    static auto enabled = true;
     auto &io = ImGui::GetIO();
     // main render window
     auto &window = EngineBase::Instance()->Window();
 
-    if(io.KeyShift && ImGui::IsKeyReleased(GLFW_KEY_F))
-    {
-        enabled = !enabled;
-    }
+    // if(io.KeyShift && ImGui::IsKeyReleased(GLFW_KEY_F))
+    // {
+    //     enabled = !enabled;
+    // }
 
-    io.MouseDrawCursor = !enabled;
+    // io.MouseDrawCursor = !enabled;
+    io.MouseDrawCursor = true;
 
     // camera movement
     if (Camera::Active() && enabled)
@@ -51,14 +56,36 @@ void FreeCamera::Update()
             cam->Position(cam->Position() + cameraRight * cameraSpeed);
         }
 
-        auto hWidth = window.Info().displayWidth / 2;
-        auto hHeight = window.Info().displayHeight / 2;
-        glfwSetCursorPos(window.Handler(), hWidth, hHeight);
+        static constexpr float camRotateSpeed = 0.001f;
+
+        if (io.KeysDown[GLFW_KEY_Q])
+        {
+            cam->Rotation(glm::angleAxis(-cameraSpeed * camRotateSpeed, cam->Up()) * cam->Rotation());
+        }
+
+        if (io.KeysDown[GLFW_KEY_E])
+        {
+            cam->Rotation(glm::angleAxis(cameraSpeed * camRotateSpeed, cam->Up()) * cam->Rotation());
+        }
+
+        if (io.KeysDown[GLFW_KEY_LEFT_SHIFT])
+        {
+            cam->Position(cam->Position() - cam->Up() * cameraSpeed);
+        }
+
+        if (io.KeysDown[GLFW_KEY_SPACE])
+        {
+            cam->Position(cam->Position() + cam->Up() * cameraSpeed);
+        }
+
+        // auto hWidth = window.Info().displayWidth / 2;
+        // auto hHeight = window.Info().displayHeight / 2;
+        // glfwSetCursorPos(window.Handler(), hWidth, hHeight);
         // Compute new orientation
-        float sensitivity = 0.1f;
-        yaw += sensitivity * io.DeltaTime * float(hWidth - io.MousePos.x);
-        pitch += sensitivity * io.DeltaTime * float(hHeight - io.MousePos.y);
-        cam->Forward(glm::vec3(cos(pitch) * sin(yaw), sin(pitch),
-                               cos(pitch) * cos(yaw)));
+        // float sensitivity = 0.1f;
+        // yaw += sensitivity * io.DeltaTime * float(hWidth - io.MousePos.x);
+        // pitch += sensitivity * io.DeltaTime * float(hHeight - io.MousePos.y);
+        // cam->Forward(glm::vec3(cos(pitch) * sin(yaw), sin(pitch),
+        //                        cos(pitch) * cos(yaw)));
     }
 }

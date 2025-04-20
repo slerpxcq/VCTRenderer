@@ -1,5 +1,6 @@
 #include <GL/glew.h>
 #include <GLFW/glfw3.h>
+#include <iostream>
 
 #include "program_shader.h"
 
@@ -10,6 +11,7 @@ void ProgramShader::Use() const
 
 void ProgramShader::Link()
 {
+    // std::cout << "Linking shader " << name
     program.Link();
 }
 
