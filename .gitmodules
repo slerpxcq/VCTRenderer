@@ -19,3 +19,6 @@
 [submodule "engine/dependencies/oglplus"]
 	path = engine/dependencies/oglplus
 	url = https://github.com/matus-chochlik/oglplus.git
+[submodule "engine/dependencies/--recursive"]
+	path = engine/dependencies/--recursive
+	url = https://github.com/CedricGuillemet/ImGuizmo.git
