@@ -19,3 +19,6 @@
 [submodule "engine/dependencies/ImGuizmo"]
 	path = engine/dependencies/ImGuizmo
 	url = https://github.com/CedricGuillemet/ImGuizmo.git
+[submodule "engine/dependencies/imgui"]
+	path = engine/dependencies/imgui
+	url = https://github.com/ocornut/imgui.git
