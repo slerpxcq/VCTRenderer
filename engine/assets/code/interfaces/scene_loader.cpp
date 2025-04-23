@@ -35,7 +35,7 @@ void UISceneLoader::Draw()
     static auto &scene = Scene::Active();
     static auto activeScene = -1;
     static Scene * reloaded = nullptr;
-    SetNextWindowPosCenter();
+    // SetNextWindowPosCenter();
 
     if (Begin("Load Scene", &UIMainMenu::drawSceneLoader))
     {

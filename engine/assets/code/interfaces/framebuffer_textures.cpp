@@ -19,8 +19,7 @@ void DrawBufferTexture(const oglplus::Texture &tex, const std::string &name)
     static auto size = ImVec2(160, 90);
     static auto uv1 = ImVec2(-1, 0);
     static auto uv2 = ImVec2(0, -1);
-    auto texName = reinterpret_cast<void *>
-                   (static_cast<intptr_t>(GetName(tex)));
+    auto texName = static_cast<ImTextureID>(GetName(tex));
     BeginGroup();
     Text(name.c_str());
     Image(texName, size, uv1, uv2);

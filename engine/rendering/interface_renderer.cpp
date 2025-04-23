@@ -2,12 +2,15 @@
 #include <GLFW/glfw3.h>
 #include "interface_renderer.h"
 
-#ifdef _WIN32
-    #undef APIENTRY
-    #define GLFW_EXPOSE_NATIVE_WIN32
-    #define GLFW_EXPOSE_NATIVE_WGL
-    #include <GLFW/glfw3native.h>
-#endif
+#include "backends/imgui_impl_glfw.h"
+#include "backends/imgui_impl_opengl3.h"
+
+// #ifdef _WIN32
+//     #undef APIENTRY
+//     #define GLFW_EXPOSE_NATIVE_WIN32
+//     #define GLFW_EXPOSE_NATIVE_WGL
+//     #include <GLFW/glfw3native.h>
+// #endif
 
 #include "../rendering/render_window.h"
 #include <glm/mat4x4.hpp>
@@ -142,50 +145,54 @@ void InterfaceRenderer::Initialize(const RenderWindow &activeWindow,
     if (!renderer) { renderer = std::make_unique<RendererData>(); }
 
     renderer->window = activeWindow.Handler();
-    ImGuiIO &io = ImGui::GetIO();
-    // Keyboard mapping. ImGui will use those indices to peek
-    // into the io.KeyDown[] array.
-    io.KeyMap[ImGuiKey_Tab] = GLFW_KEY_TAB;
-    io.KeyMap[ImGuiKey_LeftArrow] = GLFW_KEY_LEFT;
-    io.KeyMap[ImGuiKey_RightArrow] = GLFW_KEY_RIGHT;
-    io.KeyMap[ImGuiKey_UpArrow] = GLFW_KEY_UP;
-    io.KeyMap[ImGuiKey_DownArrow] = GLFW_KEY_DOWN;
-    io.KeyMap[ImGuiKey_PageUp] = GLFW_KEY_PAGE_UP;
-    io.KeyMap[ImGuiKey_PageDown] = GLFW_KEY_PAGE_DOWN;
-    io.KeyMap[ImGuiKey_Home] = GLFW_KEY_HOME;
-    io.KeyMap[ImGuiKey_End] = GLFW_KEY_END;
-    io.KeyMap[ImGuiKey_Delete] = GLFW_KEY_DELETE;
-    io.KeyMap[ImGuiKey_Backspace] = GLFW_KEY_BACKSPACE;
-    io.KeyMap[ImGuiKey_Enter] = GLFW_KEY_ENTER;
-    io.KeyMap[ImGuiKey_Escape] = GLFW_KEY_ESCAPE;
-    io.KeyMap[ImGuiKey_A] = GLFW_KEY_A;
-    io.KeyMap[ImGuiKey_C] = GLFW_KEY_C;
-    io.KeyMap[ImGuiKey_V] = GLFW_KEY_V;
-    io.KeyMap[ImGuiKey_X] = GLFW_KEY_X;
-    io.KeyMap[ImGuiKey_Y] = GLFW_KEY_Y;
-    io.KeyMap[ImGuiKey_Z] = GLFW_KEY_Z;
-    io.RenderDrawListsFn = RenderDrawList;
-    io.SetClipboardTextFn = SetClipboardText;
-    io.GetClipboardTextFn = GetClipboardText;
-    #ifdef _WIN32
-    io.ImeWindowHandle = glfwGetWin32Window(renderer->window);
-    #endif
+    ImGui::CreateContext();
+    ImGui_ImplGlfw_InitForOpenGL(renderer->window, true);
+    ImGui_ImplOpenGL3_Init("#version 460");
 
-    if (instantCallbacks)
-    {
-        glfwSetMouseButtonCallback(renderer->window, MouseButtonCallback);
-        glfwSetScrollCallback(renderer->window, ScrollCallback);
-        glfwSetKeyCallback(renderer->window, KeyCallback);
-        glfwSetCharCallback(renderer->window, CharCallback);
-    }
+    // ImGuiIO &io = ImGui::GetIO();
+    // // Keyboard mapping. ImGui will use those indices to peek
+    // // into the io.KeyDown[] array.
+    // io.KeyMap[ImGuiKey_Tab] = GLFW_KEY_TAB;
+    // io.KeyMap[ImGuiKey_LeftArrow] = GLFW_KEY_LEFT;
+    // io.KeyMap[ImGuiKey_RightArrow] = GLFW_KEY_RIGHT;
+    // io.KeyMap[ImGuiKey_UpArrow] = GLFW_KEY_UP;
+    // io.KeyMap[ImGuiKey_DownArrow] = GLFW_KEY_DOWN;
+    // io.KeyMap[ImGuiKey_PageUp] = GLFW_KEY_PAGE_UP;
+    // io.KeyMap[ImGuiKey_PageDown] = GLFW_KEY_PAGE_DOWN;
+    // io.KeyMap[ImGuiKey_Home] = GLFW_KEY_HOME;
+    // io.KeyMap[ImGuiKey_End] = GLFW_KEY_END;
+    // io.KeyMap[ImGuiKey_Delete] = GLFW_KEY_DELETE;
+    // io.KeyMap[ImGuiKey_Backspace] = GLFW_KEY_BACKSPACE;
+    // io.KeyMap[ImGuiKey_Enter] = GLFW_KEY_ENTER;
+    // io.KeyMap[ImGuiKey_Escape] = GLFW_KEY_ESCAPE;
+    // io.KeyMap[ImGuiKey_A] = GLFW_KEY_A;
+    // io.KeyMap[ImGuiKey_C] = GLFW_KEY_C;
+    // io.KeyMap[ImGuiKey_V] = GLFW_KEY_V;
+    // io.KeyMap[ImGuiKey_X] = GLFW_KEY_X;
+    // io.KeyMap[ImGuiKey_Y] = GLFW_KEY_Y;
+    // io.KeyMap[ImGuiKey_Z] = GLFW_KEY_Z;
+    // io.RenderDrawListsFn = RenderDrawList;
+    // io.SetClipboardTextFn = SetClipboardText;
+    // io.GetClipboardTextFn = GetClipboardText;
+    // #ifdef _WIN32
+    // io.ImeWindowHandle = glfwGetWin32Window(renderer->window);
+    // #endif
 
-    int w, h, display_w, display_h;;
-    glfwGetWindowSize(renderer->window, &w, &h);
-    glfwGetFramebufferSize(renderer->window, &display_w, &display_h);
-    io.DisplaySize.x = static_cast<float>(w);
-    io.DisplaySize.y = static_cast<float>(h);
-    io.DisplayFramebufferScale.x = static_cast<float>(display_w) / w;
-    io.DisplayFramebufferScale.y = static_cast<float>(display_h) / h;
+    // if (instantCallbacks)
+    // {
+    //     glfwSetMouseButtonCallback(renderer->window, MouseButtonCallback);
+    //     glfwSetScrollCallback(renderer->window, ScrollCallback);
+    //     glfwSetKeyCallback(renderer->window, KeyCallback);
+    //     glfwSetCharCallback(renderer->window, CharCallback);
+    // }
+
+    // int w, h, display_w, display_h;;
+    // glfwGetWindowSize(renderer->window, &w, &h);
+    // glfwGetFramebufferSize(renderer->window, &display_w, &display_h);
+    // io.DisplaySize.x = static_cast<float>(w);
+    // io.DisplaySize.y = static_cast<float>(h);
+    // io.DisplayFramebufferScale.x = static_cast<float>(display_w) / w;
+    // io.DisplayFramebufferScale.y = static_cast<float>(display_h) / h;
 }
 
 void InterfaceRenderer::Render()
@@ -197,6 +204,7 @@ void InterfaceRenderer::Render()
 	glfwGetWindowSize(renderer->window, &x, &y);
 	io.DisplaySize = ImVec2(x, y);
     ImGui::Render();
+    ImGui_ImplOpenGL3_RenderDrawData(ImGui::GetDrawData());
 }
 
 void InterfaceRenderer::NewFrame()
@@ -208,70 +216,74 @@ void InterfaceRenderer::NewFrame()
         CreateDeviceObjects();
     }
 
-    static auto &io = ImGui::GetIO();
+    ImGui_ImplOpenGL3_NewFrame();
+    ImGui_ImplGlfw_NewFrame();
+    ImGui::NewFrame();
 
-    if (glfwGetWindowAttrib(renderer->window, GLFW_RESIZABLE))
-    {
-        // setup display size (every frame to accommodate for window resizing)
-        static int w, h, display_w, display_h;
-        glfwGetWindowSize(renderer->window, &w, &h);
-        glfwGetFramebufferSize(renderer->window, &display_w, &display_h);
-        io.DisplaySize.x = static_cast<float>(w);
-        io.DisplaySize.y = static_cast<float>(h);;
-        io.DisplayFramebufferScale.x = static_cast<float>(display_w) / w;
-        io.DisplayFramebufferScale.y = static_cast<float>(display_h) / h;
-    }
+    // static auto &io = ImGui::GetIO();
 
-    // setup time step
-    auto current_time = glfwGetTime();
-    io.DeltaTime = renderer->time > 0.0
-                   ? static_cast<float>(current_time - renderer->time)
-                   : static_cast<float>(1.0f / 60.0f);
-    renderer->time = current_time;
+    // if (glfwGetWindowAttrib(renderer->window, GLFW_RESIZABLE))
+    // {
+    //     // setup display size (every frame to accommodate for window resizing)
+    //     static int w, h, display_w, display_h;
+    //     glfwGetWindowSize(renderer->window, &w, &h);
+    //     glfwGetFramebufferSize(renderer->window, &display_w, &display_h);
+    //     io.DisplaySize.x = static_cast<float>(w);
+    //     io.DisplaySize.y = static_cast<float>(h);;
+    //     io.DisplayFramebufferScale.x = static_cast<float>(display_w) / w;
+    //     io.DisplayFramebufferScale.y = static_cast<float>(display_h) / h;
+    // }
 
-    // setup inputs
-    // (we already got mouse wheel, keyboard keys
-    // & characters from glfw callbacks polled in glfwPollEvents())
-    if (glfwGetWindowAttrib(renderer->window, GLFW_FOCUSED))
-    {
-        // Mouse position in screen coordinates
-        // (set to -1,-1 if no mouse / on another screen, etc.)
-        double mouse_x, mouse_y;
-        glfwGetCursorPos(renderer->window, &mouse_x, &mouse_y);
-        io.MousePosPrev = io.MousePos;
-        io.MousePos = ImVec2(static_cast<float>(mouse_x),
-                             static_cast<float>(mouse_y));
-    }
-    else
-    {
-        io.MousePos = ImVec2(-1, -1);
-    }
+    // // setup time step
+    // auto current_time = glfwGetTime();
+    // io.DeltaTime = renderer->time > 0.0
+    //                ? static_cast<float>(current_time - renderer->time)
+    //                : static_cast<float>(1.0f / 60.0f);
+    // renderer->time = current_time;
 
-    for (auto i = 0; i < 3; i++)
-    {
-        io.MouseDown[i] = renderer->mousePressed[i] ||
-                          glfwGetMouseButton(renderer->window, i) != 0;
-        // If a mouse press event came, always pass it as
-        // "this frame", so we don't miss click-release events
-        // that are shorter than 1 frame.
-        renderer->mousePressed[i] = false;
-    }
+    // // setup inputs
+    // // (we already got mouse wheel, keyboard keys
+    // // & characters from glfw callbacks polled in glfwPollEvents())
+    // if (glfwGetWindowAttrib(renderer->window, GLFW_FOCUSED))
+    // {
+    //     // Mouse position in screen coordinates
+    //     // (set to -1,-1 if no mouse / on another screen, etc.)
+    //     double mouse_x, mouse_y;
+    //     glfwGetCursorPos(renderer->window, &mouse_x, &mouse_y);
+    //     io.MousePosPrev = io.MousePos;
+    //     io.MousePos = ImVec2(static_cast<float>(mouse_x),
+    //                          static_cast<float>(mouse_y));
+    // }
+    // else
+    // {
+    //     io.MousePos = ImVec2(-1, -1);
+    // }
 
-    io.MouseWheel = renderer->mouseWheel;
-    renderer->mouseWheel = 0.0f;
+    // for (auto i = 0; i < 3; i++)
+    // {
+    //     io.MouseDown[i] = renderer->mousePressed[i] ||
+    //                       glfwGetMouseButton(renderer->window, i) != 0;
+    //     // If a mouse press event came, always pass it as
+    //     // "this frame", so we don't miss click-release events
+    //     // that are shorter than 1 frame.
+    //     renderer->mousePressed[i] = false;
+    // }
 
-    // Hide OS mouse cursor if ImGui is drawing it
-    if(io.MouseDrawCursor)
-    {
-        glfwSetInputMode(renderer->window, GLFW_CURSOR, GLFW_CURSOR_NORMAL);
-    }
-    else
-    {
-        glfwSetInputMode(renderer->window, GLFW_CURSOR, GLFW_CURSOR_HIDDEN);
-    }
+    // io.MouseWheel = renderer->mouseWheel;
+    // renderer->mouseWheel = 0.0f;
+
+    // // Hide OS mouse cursor if ImGui is drawing it
+    // if(io.MouseDrawCursor)
+    // {
+    //     glfwSetInputMode(renderer->window, GLFW_CURSOR, GLFW_CURSOR_NORMAL);
+    // }
+    // else
+    // {
+    //     glfwSetInputMode(renderer->window, GLFW_CURSOR, GLFW_CURSOR_HIDDEN);
+    // }
 
     // Start the frame
-    ImGui::NewFrame();
+    // ImGui::NewFrame();
 }
 
 
@@ -295,7 +307,7 @@ void InterfaceRenderer::CreateFontsTexture()
     glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA8, width, height, 0, GL_RGBA,
                  GL_UNSIGNED_BYTE, pixels);
     // Store our identifier
-    io.Fonts->TexID = (void *)(intptr_t)renderer->fontTexture;
+    io.Fonts->TexID = (intptr_t)renderer->fontTexture;
 }
 
 void InterfaceRenderer::CreateDeviceObjects()
@@ -377,31 +389,34 @@ void InterfaceRenderer::CreateDeviceObjects()
 
 void InterfaceRenderer::Terminate()
 {
-    if (renderer->vaoHandle) { glDeleteVertexArrays(1, &renderer->vaoHandle); }
+    ImGui_ImplOpenGL3_Shutdown();
+    ImGui_ImplGlfw_Shutdown();
+    ImGui::DestroyContext();
+    // if (renderer->vaoHandle) { glDeleteVertexArrays(1, &renderer->vaoHandle); }
 
-    if (renderer->vboHandle) { glDeleteBuffers(1, &renderer->vboHandle); }
+    // if (renderer->vboHandle) { glDeleteBuffers(1, &renderer->vboHandle); }
 
-    if (renderer->elementsHandle) { glDeleteBuffers(1, &renderer->elementsHandle); }
+    // if (renderer->elementsHandle) { glDeleteBuffers(1, &renderer->elementsHandle); }
 
-    renderer->vaoHandle = renderer->vboHandle = renderer->elementsHandle = 0;
-    glDetachShader(renderer->shaderHandle, renderer->vertHandle);
-    glDeleteShader(renderer->vertHandle);
-    renderer->vertHandle = 0;
-    glDetachShader(renderer->shaderHandle, renderer->fragHandle);
-    glDeleteShader(renderer->fragHandle);
-    renderer->fragHandle = 0;
-    glDeleteProgram(renderer->shaderHandle);
-    renderer->shaderHandle = 0;
+    // renderer->vaoHandle = renderer->vboHandle = renderer->elementsHandle = 0;
+    // glDetachShader(renderer->shaderHandle, renderer->vertHandle);
+    // glDeleteShader(renderer->vertHandle);
+    // renderer->vertHandle = 0;
+    // glDetachShader(renderer->shaderHandle, renderer->fragHandle);
+    // glDeleteShader(renderer->fragHandle);
+    // renderer->fragHandle = 0;
+    // glDeleteProgram(renderer->shaderHandle);
+    // renderer->shaderHandle = 0;
 
-    if (renderer->fontTexture)
-    {
-        glDeleteTextures(1, &renderer->fontTexture);
-        ImGui::GetIO().Fonts->TexID = 0;
-        renderer->fontTexture = 0;
-    }
+    // if (renderer->fontTexture)
+    // {
+    //     glDeleteTextures(1, &renderer->fontTexture);
+    //     ImGui::GetIO().Fonts->TexID = 0;
+    //     renderer->fontTexture = 0;
+    // }
 
-    ImGui::Shutdown();
-    delete renderer.release();
+    // // ImGui::Shutdown();
+    // delete renderer.release();
 }
 
 void InterfaceRenderer::InvalidateDeviceObjects()
@@ -429,7 +444,7 @@ void InterfaceRenderer::InvalidateDeviceObjects()
         renderer->fontTexture = 0;
     }
 
-    ImGui::Shutdown();
+    // ImGui::Shutdown();
 }
 
 void InterfaceRenderer::MouseButtonCallback(GLFWwindow * window, int button,
@@ -456,30 +471,30 @@ void InterfaceRenderer::ScrollCallback(GLFWwindow * window, double xoffset,
 void InterfaceRenderer::KeyCallback(GLFWwindow * window, int key, int scancode,
                                     int action, int mods)
 {
-    auto &io = ImGui::GetIO();
+    // auto &io = ImGui::GetIO();
 
-    if (action == GLFW_PRESS)
-    {
-        io.KeysDown[key] = true;
-    }
+    // if (action == GLFW_PRESS)
+    // {
+    //     io.KeysDown[key] = true;
+    // }
 
-    if (action == GLFW_RELEASE)
-    {
-        io.KeysDown[key] = false;
-    }
+    // if (action == GLFW_RELEASE)
+    // {
+    //     io.KeysDown[key] = false;
+    // }
 
-    (void)mods; // Modifiers are not reliable across systems
-    io.KeyCtrl = io.KeysDown[GLFW_KEY_LEFT_CONTROL] ||
-                 io.KeysDown[GLFW_KEY_RIGHT_CONTROL];
-    io.KeyShift = io.KeysDown[GLFW_KEY_LEFT_SHIFT] ||
-                  io.KeysDown[GLFW_KEY_RIGHT_SHIFT];
-    io.KeyAlt = io.KeysDown[GLFW_KEY_LEFT_ALT] ||
-                io.KeysDown[GLFW_KEY_RIGHT_ALT];
+    // (void)mods; // Modifiers are not reliable across systems
+    // io.KeyCtrl = io.KeysDown[GLFW_KEY_LEFT_CONTROL] ||
+    //              io.KeysDown[GLFW_KEY_RIGHT_CONTROL];
+    // io.KeyShift = io.KeysDown[GLFW_KEY_LEFT_SHIFT] ||
+    //               io.KeysDown[GLFW_KEY_RIGHT_SHIFT];
+    // io.KeyAlt = io.KeysDown[GLFW_KEY_LEFT_ALT] ||
+    //             io.KeysDown[GLFW_KEY_RIGHT_ALT];
 
-    if (io.KeysDown[GLFW_KEY_H])
-    {
-        renderer->disabled = !renderer->disabled;
-    }
+    // if (io.KeysDown[GLFW_KEY_H])
+    // {
+    //     renderer->disabled = !renderer->disabled;
+    // }
 }
 
 void InterfaceRenderer::CharCallback(GLFWwindow * window, unsigned int c)

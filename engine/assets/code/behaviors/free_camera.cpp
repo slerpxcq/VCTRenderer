@@ -1,5 +1,7 @@
 #include <GL/glew.h>
 #include <GLFW/glfw3.h>
+
+#include "imgui.h"
 #include "free_camera.h"
 #include "../scene/camera.h"
 #include "../core/interface.h"
@@ -19,7 +21,7 @@ void FreeCamera::Update()
     // }
 
     // io.MouseDrawCursor = !enabled;
-    io.MouseDrawCursor = true;
+    // io.MouseDrawCursor = true;
 
     // camera movement
     if (Camera::Active() && enabled)
@@ -32,44 +34,44 @@ void FreeCamera::Update()
         auto cameraRight = normalize(cross(cam->Forward(), cam->Up()));
         static auto yaw = 3.14f, pitch = 0.0f;
 
-        if (io.KeysDown[GLFW_KEY_W])
+        if (ImGui::IsKeyDown(ImGuiKey_W))
         {
             cam->Position(cam->Position() + cam->Forward() * cameraSpeed);
         }
 
-        if (io.KeysDown[GLFW_KEY_S])
+        if (ImGui::IsKeyDown(ImGuiKey_S))
         {
             cam->Position(cam->Position() - cam->Forward() * cameraSpeed);
         }
 
-        if (io.KeysDown[GLFW_KEY_A])
+        if (ImGui::IsKeyDown(ImGuiKey_A))
         {
             cam->Position(cam->Position() - cameraRight * cameraSpeed);
         }
 
-        if (io.KeysDown[GLFW_KEY_D])
+        if (ImGui::IsKeyDown(ImGuiKey_D))
         {
             cam->Position(cam->Position() + cameraRight * cameraSpeed);
         }
 
-        static constexpr float camRotateSpeed = 0.05f;
+        static constexpr float camRotateSpeed = 0.025f;
 
-        if (io.KeysDown[GLFW_KEY_Q])
+        if (ImGui::IsKeyDown(ImGuiKey_Q))
         {
-            cam->Rotation(glm::angleAxis(-cameraSpeed * camRotateSpeed, cam->Up()) * cam->Rotation());
+            cam->Rotation(glm::angleAxis(-camRotateSpeed, cam->Up()) * cam->Rotation());
         }
 
-        if (io.KeysDown[GLFW_KEY_E])
+        if (ImGui::IsKeyDown(ImGuiKey_E))
         {
-            cam->Rotation(glm::angleAxis(cameraSpeed * camRotateSpeed, cam->Up()) * cam->Rotation());
+            cam->Rotation(glm::angleAxis(camRotateSpeed, cam->Up()) * cam->Rotation());
         }
 
-        if (io.KeysDown[GLFW_KEY_LEFT_SHIFT])
+        if (ImGui::IsKeyDown(ImGuiKey_LeftShift))
         {
             cam->Position(cam->Position() - cam->Up() * cameraSpeed);
         }
 
-        if (io.KeysDown[GLFW_KEY_SPACE])
+        if (ImGui::IsKeyDown(ImGuiKey_Space))
         {
             cam->Position(cam->Position() + cam->Up() * cameraSpeed);
         }
