@@ -26,11 +26,14 @@ SceneImporter::~SceneImporter()
 {
 }
 
-bool SceneImporter::Import(const std::string &filepath, Scene * scene,
+bool SceneImporter::Import(const std::string& filepath,
+                           Scene* scene,
                            unsigned flags)
 {
     Assimp::Importer importer;
-    const aiScene * mScene = importer.ReadFile(filepath, flags);
+    const aiScene* mScene = nullptr;
+
+	mScene = importer.ReadFile(filepath, flags);
 
     if (!mScene)
     {
@@ -274,24 +277,19 @@ void SceneImporter::ImportMesh(aiMesh * mMesh, Mesh &mesh)
     }
 }
 
-void SceneImporter::ProcessNodes(Scene * scene, aiNode * mNode, Node &node)
+void SceneImporter::ProcessNodes(Scene * scene, aiNode * mNode, Node &node, uint32_t meshIndexOffset)
 {
     node.name = mNode->mName.length > 0 ? mNode->mName.C_Str() : node.name;
 
     // meshes associated with this node
     for (unsigned int i = 0; i < mNode->mNumMeshes; i++)
     {
+        auto sceneMesh = scene->meshes[meshIndexOffset + mNode->mMeshes[i]];
         // insert after same name
-        node.meshes.push_back(scene->meshes[mNode->mMeshes[i]]);
+        node.meshes.push_back(sceneMesh);
         // node boundaries based on mesh boundaries
-        node.boundaries.MinPoint
-        (
-            scene->meshes[mNode->mMeshes[i]]->boundaries.MinPoint()
-        );
-        node.boundaries.MaxPoint
-        (
-            scene->meshes[mNode->mMeshes[i]]->boundaries.MaxPoint()
-        );
+        node.boundaries.MinPoint(sceneMesh->boundaries.MinPoint());
+        node.boundaries.MaxPoint(sceneMesh->boundaries.MaxPoint());
     }
 
     // push childrens in hierachy
@@ -299,31 +297,21 @@ void SceneImporter::ProcessNodes(Scene * scene, aiNode * mNode, Node &node)
     {
         // create children
         node.nodes.push_back(std::make_shared<Node>());
-        ProcessNodes(scene, mNode->mChildren[i], *node.nodes.back());
+        ProcessNodes(scene, mNode->mChildren[i], *node.nodes.back(), meshIndexOffset);
         // node boundaries based on children node boundaries
-        node.boundaries.MinPoint
-        (
-            node.nodes.back()->boundaries.MinPoint()
-        );
-        node.boundaries.MaxPoint
-        (
-            node.nodes.back()->boundaries.MaxPoint()
-        );
+        node.boundaries.MinPoint(node.nodes.back()->boundaries.MinPoint());
+        node.boundaries.MaxPoint(node.nodes.back()->boundaries.MaxPoint());
     }
 
     // transformation matrix decomposition using assimp implementation
-    // aiVector3D pos; aiVector3D sca; aiQuaternion rot;
-    // mNode->mTransformation.Decompose(sca, rot, pos);
-    // Force identity
+    aiVector3D pos; aiVector3D sca; aiQuaternion rot;
+    mNode->mTransformation.Decompose(sca, rot, pos);
 
     // BUG: assimp implementation is wrong
-    // node.transform.Scale(glm::vec3(sca.x, sca.y, sca.z));
-    // node.transform.Position(glm::vec3(pos.x, pos.y, pos.z));
-    // node.transform.Scale(glm::vec3(1));
-    // node.transform.Rotation(glm::quat(rot.w, rot.x, rot.y, rot.z));
-    node.transform.Scale(glm::vec3(1));
-    node.transform.Position(glm::vec3(0));
-    node.transform.Rotation(glm::quat());
+    node.transform.Scale(glm::vec3(sca.x, sca.y, sca.z));
+    node.transform.Position(glm::vec3(pos.x, pos.y, pos.z));
+    node.transform.Rotation(glm::quat(rot.w, rot.x, rot.y, rot.z));
+
     // build per node draw lists from recursive draw
     // useful for easier batching
     node.BuildDrawList();
@@ -336,8 +324,9 @@ inline std::string GetFileExtension(const std::string &sFilepath)
 }
 
 void SceneImporter::ImportMaterialTextures(Scene * scene,
-        aiMaterial * mMaterial,
-        Material &material)
+                                           aiMaterial * mMaterial,
+                                           Material &material,
+                                           const std::string& path)
 {
     for (aiTextureType texType = aiTextureType_NONE;
             texType < aiTextureType_UNKNOWN;
@@ -358,7 +347,8 @@ void SceneImporter::ImportMaterialTextures(Scene * scene,
             const char* texPathStr = texPath.C_Str();
             while (texPathStr[texPathStart] == '\0')
                 ++texPathStart;
-            auto filepath = scene->directory + "\\" + std::string(&texPathStr[texPathStart]);
+            auto dir = path.empty() ? scene->directory : path;
+            auto filepath = dir + "\\" + std::string(&texPathStr[texPathStart]);
             // find if texture was already loaded previously
             bool alreadyLoaded = false;
             int savedTextureIndex = 0;

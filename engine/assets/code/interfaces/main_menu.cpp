@@ -1,17 +1,23 @@
 #include <GL/glew.h>
 #include <GLFW/glfw3.h>
 #include "main_menu.h"
-
-#include <iostream>
-#include <filesystem>
-#include <fstream>
+#include "../util/scene_importer.h"
 
 #include "../renderers/voxelizer_renderer.h"
 #include "../../../rendering/render_window.h"
 #include "../scene/scene.h"
+#include "../scene/mesh.h"
+#include "../scene/material.h"  
+#include "../../../core/assets_manager.h"
+#include "../renderers/voxelizer_renderer.h"
+
 #include "assimp/Importer.hpp"
 #include "assimp/postprocess.h"
 #include "assimp/scene.h"
+
+#include <iostream>
+#include <filesystem>
+#include <fstream>
 
 bool UIMainMenu::drawSceneLoader = true;
 bool UIMainMenu::drawFramerate = false;
@@ -23,9 +29,19 @@ bool UIMainMenu::drawVoxelizationOptions = false;
 bool UIMainMenu::drawGIOptions = false;
 bool UIMainMenu::drawSceneMaterials = false;
 bool UIMainMenu::drawSceneNodes = false;
-bool UIMainMenu::loadModel = false;
+bool UIMainMenu::drawSceneGraph = false;
 
 using namespace ImGui;
+
+static void DrawSceneGraph(std::shared_ptr<Node> node)
+{
+    if (ImGui::TreeNode(node->name.c_str())) {
+        for (auto child : node->nodes) {
+            DrawSceneGraph(child);
+        }
+        ImGui::TreePop();
+    }
+}
 
 static void PrintSceneGraph(std::shared_ptr<Node> node, uint32_t level = 0)
 {
@@ -39,42 +55,52 @@ static void PrintSceneGraph(std::shared_ptr<Node> node, uint32_t level = 0)
     }
 }
 
-static void PrintModelNodes(const aiNode* node, uint32_t level = 0)
+
+static std::shared_ptr<Node> ImportModel()
 {
-	for (uint32_t i = 0; i < level; ++i)
-		std::cout << ' ';
+    std::filesystem::path modelPath = u8"assets\\models\\つみ式ミクさんv4";
+    std::filesystem::path modelFile = u8"つみ式ミクさんv4.pmx";
 
-    std::cout << node->mName.C_Str() << '\n';
+    Scene model((modelPath / modelFile).string());
+    SceneImporter::Import(model.GetFilepath(), &model, aiProcessPreset_TargetRealtime_Fast);
 
-    for (uint32_t i = 0; i < node->mNumChildren; ++i) {
-        PrintModelNodes(node->mChildren[i], level + 1);
+    for (auto& mesh : model.meshes)
+        mesh->Load();
+
+    for (auto& tex : model.textures)
+        tex->Load(oglplus::TextureMinFilter::LinearMipmapLinear,
+                  oglplus::TextureMagFilter::Linear,
+                  oglplus::TextureWrap::Repeat,
+                  oglplus::TextureWrap::Repeat);
+    
+    for (auto& node : model.rootNode->nodes) {
+        node->BuildDrawList();
+        node->nodeState = Node::Dynamic;
     }
+
+    Transform::CleanEventMap();
+
+    return model.rootNode;
 }
 
-static void ImportModel(std::unique_ptr<Scene>& scene)
+static void LoadModelToScene(std::shared_ptr<Node> model)
 {
-    Assimp::Importer importer;
-    std::ifstream ifs(u8"assets\\models\\つみ式ミクさんv4\\つみ式ミクさんv4.pmx", 
-                      std::ios::binary | std::ios::ate);
-    assert(ifs.is_open());
-    auto fileSize = ifs.tellg();
-    ifs.seekg(0, std::ios::beg);
+    auto voxelizer = std::dynamic_pointer_cast<VoxelizerRenderer>(AssetsManager::Instance()->renderers["Voxelizer"]);
+    auto& scene = Scene::Active(); 
 
-    std::vector<char> buf(fileSize);
-    ifs.read(buf.data(), fileSize);
+    scene->rootNode->nodes.push_back(model);
+    scene->rootNode->BuildDrawList();
 
-    auto model = importer.ReadFileFromMemory(buf.data(), buf.size(),
-                                             aiProcess_Triangulate,
-                                             "pmx");
-    assert(model);
+    for (auto& mesh : model->meshes) 
+        scene->materials.push_back(mesh->material);
 
-    // print all nodes in the model
-    PrintModelNodes(model->mRootNode);
+    voxelizer->RevoxelizeScene();
 }
 
 void UIMainMenu::Draw()
 {
     static bool showAbout = false;
+	auto& scene = Scene::Active();
 
     if (BeginMainMenuBar())
     {
@@ -84,7 +110,7 @@ void UIMainMenu::Draw()
             MenuItem("Show Framerate", nullptr, &drawFramerate);
             MenuItem("View Voxels", nullptr, &VoxelizerRenderer::ShowVoxels);
             MenuItem("View Framebuffers", nullptr, &drawFramebuffers);
-            EndMenu();
+            ImGui::EndMenu();
         }
 
         if (BeginMenu("Scene"))
@@ -94,17 +120,14 @@ void UIMainMenu::Draw()
             MenuItem("Materials", nullptr, &drawSceneMaterials);
             MenuItem("Shapes", nullptr, &drawSceneNodes);
             if (MenuItem("Load model", nullptr)) {
-            // Load model into current scene
-                auto& scene = Scene::Active();
                 if (scene) {
-					// print the scene graph recursively
-					PrintSceneGraph(scene->rootNode);
-                    ImportModel(scene);
+                    LoadModelToScene(ImportModel());
                 } else {
                     std::cerr << "A scene must be loaded to load a model.\n";
                 }
             }
-            EndMenu();
+            MenuItem("Scene graph", nullptr, &drawSceneGraph);
+            ImGui::EndMenu();
         }
 
         if (BeginMenu("Options"))
@@ -113,7 +136,7 @@ void UIMainMenu::Draw()
             MenuItem("Voxelization", nullptr, &drawVoxelizationOptions);
             MenuItem("Global Illumination", nullptr, &drawGIOptions);
             MenuItem("About", nullptr, &showAbout);
-            EndMenu();
+            ImGui::EndMenu();
         }
 
         if(Button("Exit"))
@@ -132,6 +155,13 @@ void UIMainMenu::Draw()
             Text("Email: villegasjose.gg@gmail.com");
         }
 
+        End();
+    }
+
+    if (drawSceneGraph) {
+        if (ImGui::Begin("Scene graph", &drawSceneGraph, ImGuiWindowFlags_AlwaysAutoResize)) {
+            DrawSceneGraph(scene->rootNode);
+        }
         End();
     }
 }

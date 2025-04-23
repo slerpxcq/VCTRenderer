@@ -6,10 +6,6 @@
 #include "../rendering/render_window.h"
 #include "../../../scene/scene.h"
 
-void FreeCamera::Update2()
-{
-}
-
 void FreeCamera::Update()
 {
     static auto enabled = true;
@@ -56,7 +52,7 @@ void FreeCamera::Update()
             cam->Position(cam->Position() + cameraRight * cameraSpeed);
         }
 
-        static constexpr float camRotateSpeed = 0.001f;
+        static constexpr float camRotateSpeed = 0.05f;
 
         if (io.KeysDown[GLFW_KEY_Q])
         {

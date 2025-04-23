@@ -119,10 +119,10 @@ void EngineBase::Initialize() const
         renderWindow->WindowHint(WindowHints::AutoIconify, false);
         renderWindow->WindowHint(WindowHints::Resizable, false);
         renderWindow->WindowHint(ContextHints::ContextVersionMajor, 4);
-        renderWindow->WindowHint(ContextHints::ContextVersionMinor, 3);
+        renderWindow->WindowHint(ContextHints::ContextVersionMinor, 6);
         renderWindow->WindowHint(ContextHints::OpenGLProfile, Hint::OpenGLCoreProfile);
         renderWindow->WindowHint(ContextHints::OpenGLForwardCompatibility, Hint::False);
-        renderWindow->Open(WindowInfo(1280, 720, 0, 0, "Voxel Cone Tracing"), false,
+        renderWindow->Open(WindowInfo(1440, 900, 0, 0, "Voxel Cone Tracing"), false,
             nullptr, nullptr);
     }
 

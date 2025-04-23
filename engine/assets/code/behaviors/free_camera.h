@@ -7,6 +7,4 @@ protected:
 public:
 	FreeCamera() = default;
 	~FreeCamera() = default;
-private:
-	void Update2();
 };

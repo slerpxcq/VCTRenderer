@@ -192,6 +192,10 @@ void InterfaceRenderer::Render()
 {
     if (renderer->disabled) { return; }
 
+	ImGuiIO& io = ImGui::GetIO();
+	int32_t x, y;
+	glfwGetWindowSize(renderer->window, &x, &y);
+	io.DisplaySize = ImVec2(x, y);
     ImGui::Render();
 }
 
@@ -279,7 +283,9 @@ void InterfaceRenderer::CreateFontsTexture()
     int width, height;
     // Load as RGBA 32-bits for OpenGL3 demo because it is more
     // likely to be compatible with user's existing shader.
-    io.Fonts->AddFontFromFileTTF("assets\\fonts\\DroidSans.ttf", 13);
+    // io.Fonts->AddFontFromFileTTF("assets\\fonts\\DroidSans.ttf", 13);
+    io.Fonts->AddFontFromFileTTF("assets\\fonts\\Noto_Sans_JP\\static\\NotoSansJP-Regular.ttf", 20, 
+                                 nullptr, io.Fonts->GetGlyphRangesJapanese());
     io.Fonts->GetTexDataAsRGBA32(&pixels, &width, &height);
     // Create OpenGL texture
     glGenTextures(1, &renderer->fontTexture);

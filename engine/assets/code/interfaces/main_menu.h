@@ -19,7 +19,7 @@ class UIMainMenu : public Interface
         static bool drawGIOptions;
         static bool drawSceneMaterials;
         static bool drawSceneNodes;
-        static bool loadModel;
+        static bool drawSceneGraph;
         UIMainMenu();
         ~UIMainMenu() override;
 };

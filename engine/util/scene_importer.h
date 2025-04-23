@@ -62,17 +62,19 @@ class SceneImporter
         /// <param name="scene">The scene.</param>
         /// <param name="flags">The flags.</param>
         /// <returns></returns>
-        static bool Import(const std::string &filepath, Scene * scene, unsigned flags);
+        static bool Import(const std::string& filepath,
+                           Scene* scene,
+                           unsigned flags = 0);
 
         SceneImporter();
         virtual ~SceneImporter();
-    private:
+    public:
         static void ImportMaterial(aiMaterial * mMaterial, Material &material);
         static void ImportMesh(aiMesh * mMesh, Mesh &mesh);
-        static void ProcessNodes(Scene * scene, aiNode * mNode, Node &node);
+        static void ProcessNodes(Scene * scene, aiNode * mNode, Node &node, uint32_t offset = 0);
         static void ImportCamera(aiCamera * mCam, Camera &camera);
         static void ImportLight(aiLight * mLight, Light &light);
         static void ImportMaterialTextures(Scene * scene, aiMaterial * mMaterial,
-                                           Material &material);
+                                           Material &material, const std::string& path = "");
 };
 
