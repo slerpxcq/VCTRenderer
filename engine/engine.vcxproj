@@ -124,7 +124,7 @@
       <WarningLevel>Level3</WarningLevel>
       <Optimization>Disabled</Optimization>
       <SDLCheck>true</SDLCheck>
-      <AdditionalIncludeDirectories>$(ProjectDir)include;$(ProjectDir)implement</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>$(ProjectDir)dependencies/imgui;$(ProjectDir)include;$(ProjectDir)implement</AdditionalIncludeDirectories>
       <PrecompiledHeader>NotUsing</PrecompiledHeader>
       <PreprocessorDefinitions>NOMINMAX;GLEW_STATIC;_SCL_SECURE_NO_WARNINGS;_CRT_SECURE_NO_WARNINGS;IMGUI_DISABLE_WIN32_DEFAULT_CLIPBOARD_FUNCS;IMGUI_DISABLE_WIN32_DEFAULT_IME_FUNCS;</PreprocessorDefinitions>
       <EnablePREfast>false</EnablePREfast>
@@ -306,7 +306,7 @@ xcopy /Y/S/H/E/K "$(ProjectDir)assets\shaders" "$(TargetDir)assets\shaders\"</Co
     </PostBuildEvent>
   </ItemDefinitionGroup>
   <ItemGroup>
-    <ClCompile Include="3rdparty\imgui\imgui.cpp">
+    <ClCompile Include="dependencies\imgui\imgui.cpp">
       <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">NotUsing</PrecompiledHeader>
       <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">NotUsing</PrecompiledHeader>
       <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Deploy|Win32'">NotUsing</PrecompiledHeader>
@@ -320,7 +320,7 @@ xcopy /Y/S/H/E/K "$(ProjectDir)assets\shaders" "$(TargetDir)assets\shaders\"</Co
       <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Release|x64'">false</ExcludedFromBuild>
       <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Deploy|x64'">false</ExcludedFromBuild>
     </ClCompile>
-    <ClCompile Include="3rdparty\imgui\imgui_demo.cpp">
+    <ClCompile Include="dependencies\imgui\imgui_demo.cpp">
       <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">NotUsing</PrecompiledHeader>
       <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">NotUsing</PrecompiledHeader>
       <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Deploy|Win32'">NotUsing</PrecompiledHeader>
@@ -334,7 +334,7 @@ xcopy /Y/S/H/E/K "$(ProjectDir)assets\shaders" "$(TargetDir)assets\shaders\"</Co
       <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Release|x64'">false</ExcludedFromBuild>
       <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Deploy|x64'">false</ExcludedFromBuild>
     </ClCompile>
-    <ClCompile Include="3rdparty\imgui\imgui_draw.cpp">
+    <ClCompile Include="dependencies\imgui\imgui_draw.cpp">
       <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">NotUsing</PrecompiledHeader>
       <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">NotUsing</PrecompiledHeader>
       <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Deploy|Win32'">NotUsing</PrecompiledHeader>
@@ -369,6 +369,11 @@ xcopy /Y/S/H/E/K "$(ProjectDir)assets\shaders" "$(TargetDir)assets\shaders\"</Co
     <ClCompile Include="assets\code\programs\voxel_drawer_program.cpp" />
     <ClCompile Include="assets\code\renderers\shadow_map_renderer.cpp" />
     <ClCompile Include="assets\code\programs\depth_program.cpp" />
+    <ClCompile Include="dependencies\ImGuizmo\GraphEditor.cpp" />
+    <ClCompile Include="dependencies\ImGuizmo\ImCurveEdit.cpp" />
+    <ClCompile Include="dependencies\ImGuizmo\ImGradient.cpp" />
+    <ClCompile Include="dependencies\ImGuizmo\ImGuizmo.cpp" />
+    <ClCompile Include="dependencies\ImGuizmo\ImSequencer.cpp" />
     <ClCompile Include="rendering\primitives\shapes.cpp" />
     <ClCompile Include="rendering\primitives\fullscreen_quad.cpp" />
     <ClCompile Include="util\metrics_report.cpp" />
@@ -411,8 +416,8 @@ xcopy /Y/S/H/E/K "$(ProjectDir)assets\shaders" "$(TargetDir)assets\shaders\"</Co
     <ClCompile Include="assets\code\programs\voxelization_program.cpp" />
   </ItemGroup>
   <ItemGroup>
-    <ClInclude Include="3rdparty\imgui\imconfig.h" />
-    <ClInclude Include="3rdparty\imgui\imgui.h">
+    <ClInclude Include="dependencies\imgui\imconfig.h" />
+    <ClInclude Include="dependencies\imgui\imgui.h">
       <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">false</ExcludedFromBuild>
       <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">false</ExcludedFromBuild>
       <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Deploy|Win32'">false</ExcludedFromBuild>
@@ -420,7 +425,7 @@ xcopy /Y/S/H/E/K "$(ProjectDir)assets\shaders" "$(TargetDir)assets\shaders\"</Co
       <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Release|x64'">false</ExcludedFromBuild>
       <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Deploy|x64'">false</ExcludedFromBuild>
     </ClInclude>
-    <ClInclude Include="3rdparty\imgui\imgui_internal.h">
+    <ClInclude Include="dependencies\imgui\imgui_internal.h">
       <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">false</ExcludedFromBuild>
       <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">false</ExcludedFromBuild>
       <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Deploy|Win32'">false</ExcludedFromBuild>
@@ -428,7 +433,7 @@ xcopy /Y/S/H/E/K "$(ProjectDir)assets\shaders" "$(TargetDir)assets\shaders\"</Co
       <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Release|x64'">false</ExcludedFromBuild>
       <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Deploy|x64'">false</ExcludedFromBuild>
     </ClInclude>
-    <ClInclude Include="3rdparty\imgui\stb_rect_pack.h">
+    <ClInclude Include="dependencies\imgui\stb_rect_pack.h">
       <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">false</ExcludedFromBuild>
       <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">false</ExcludedFromBuild>
       <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Deploy|Win32'">false</ExcludedFromBuild>
@@ -436,7 +441,7 @@ xcopy /Y/S/H/E/K "$(ProjectDir)assets\shaders" "$(TargetDir)assets\shaders\"</Co
       <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Release|x64'">false</ExcludedFromBuild>
       <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Deploy|x64'">false</ExcludedFromBuild>
     </ClInclude>
-    <ClInclude Include="3rdparty\imgui\stb_textedit.h">
+    <ClInclude Include="dependencies\imgui\stb_textedit.h">
       <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">false</ExcludedFromBuild>
       <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">false</ExcludedFromBuild>
       <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Deploy|Win32'">false</ExcludedFromBuild>
@@ -444,7 +449,7 @@ xcopy /Y/S/H/E/K "$(ProjectDir)assets\shaders" "$(TargetDir)assets\shaders\"</Co
       <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Release|x64'">false</ExcludedFromBuild>
       <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Deploy|x64'">false</ExcludedFromBuild>
     </ClInclude>
-    <ClInclude Include="3rdparty\imgui\stb_truetype.h">
+    <ClInclude Include="dependencies\imgui\stb_truetype.h">
       <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">false</ExcludedFromBuild>
       <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">false</ExcludedFromBuild>
       <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Deploy|Win32'">false</ExcludedFromBuild>
@@ -472,6 +477,12 @@ xcopy /Y/S/H/E/K "$(ProjectDir)assets\shaders" "$(TargetDir)assets\shaders\"</Co
     <ClInclude Include="assets\code\programs\voxel_drawer_program.h" />
     <ClInclude Include="assets\code\renderers\shadow_map_renderer.h" />
     <ClInclude Include="assets\code\programs\depth_program.h" />
+    <ClInclude Include="dependencies\ImGuizmo\GraphEditor.h" />
+    <ClInclude Include="dependencies\ImGuizmo\ImCurveEdit.h" />
+    <ClInclude Include="dependencies\ImGuizmo\ImGradient.h" />
+    <ClInclude Include="dependencies\ImGuizmo\ImGuizmo.h" />
+    <ClInclude Include="dependencies\ImGuizmo\ImSequencer.h" />
+    <ClInclude Include="dependencies\ImGuizmo\ImZoomSlider.h" />
     <ClInclude Include="rendering\primitives\shapes.h" />
     <ClInclude Include="rendering\primitives\fullscreen_quad.h" />
     <ClInclude Include="util\metrics_report.h" />

@@ -2,7 +2,7 @@
 
 #include <memory>
 
-#include "../3rdparty/imgui/imgui.h"
+#include "imgui.h"
 
 class RenderWindow;
 

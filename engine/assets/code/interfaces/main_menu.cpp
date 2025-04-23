@@ -43,56 +43,47 @@ static void DrawSceneGraph(std::shared_ptr<Node> node)
     }
 }
 
-static void PrintSceneGraph(std::shared_ptr<Node> node, uint32_t level = 0)
+static void SetNodeProperty(std::shared_ptr<Node> node)
 {
-    for (uint32_t i = 0; i < level; ++i)
-        std::cout << ' ';
-
-    std::cout << node->name << '\n';
-
-    for (auto child : node->nodes) {
-        PrintSceneGraph(child, level + 1);
-    }
+	node->nodeState = Node::Dynamic;
+    for (auto& child : node->nodes)
+        SetNodeProperty(child);
 }
 
-
-static std::shared_ptr<Node> ImportModel()
+static std::shared_ptr<Scene> ImportModel()
 {
     std::filesystem::path modelPath = u8"assets\\models\\つみ式ミクさんv4";
     std::filesystem::path modelFile = u8"つみ式ミクさんv4.pmx";
 
-    Scene model((modelPath / modelFile).string());
-    SceneImporter::Import(model.GetFilepath(), &model, aiProcessPreset_TargetRealtime_Fast);
+    auto model = std::make_shared<Scene>((modelPath / modelFile).string());
+    SceneImporter::Import(model->GetFilepath(), model.get(), aiProcessPreset_TargetRealtime_Fast);
 
-    for (auto& mesh : model.meshes)
+    for (auto& mesh : model->meshes)
         mesh->Load();
 
-    for (auto& tex : model.textures)
+    for (auto& tex : model->textures)
         tex->Load(oglplus::TextureMinFilter::LinearMipmapLinear,
                   oglplus::TextureMagFilter::Linear,
                   oglplus::TextureWrap::Repeat,
                   oglplus::TextureWrap::Repeat);
-    
-    for (auto& node : model.rootNode->nodes) {
-        node->BuildDrawList();
-        node->nodeState = Node::Dynamic;
-    }
+   
+    SetNodeProperty(model->rootNode);
 
     Transform::CleanEventMap();
 
-    return model.rootNode;
+    return model;
 }
 
-static void LoadModelToScene(std::shared_ptr<Node> model)
+static void LoadModelToScene(std::shared_ptr<Scene> model)
 {
     auto voxelizer = std::dynamic_pointer_cast<VoxelizerRenderer>(AssetsManager::Instance()->renderers["Voxelizer"]);
     auto& scene = Scene::Active(); 
 
-    scene->rootNode->nodes.push_back(model);
+    scene->rootNode->nodes.push_back(model->rootNode);
     scene->rootNode->BuildDrawList();
 
-    for (auto& mesh : model->meshes) 
-        scene->materials.push_back(mesh->material);
+    for (auto& mat : model->materials) 
+        scene->materials.push_back(mat);
 
     voxelizer->RevoxelizeScene();
 }

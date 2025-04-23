@@ -9,12 +9,11 @@
 # 2025/4/22
 - [x] load pmx into scene
   - [x] build node structure
-  - [ ] mesh and textures needed to be manually loaded
 
 # 2025/4/23
-  - [ ] model not in draw list
-
-- [ ] Draw mesh
+- [x] Draw mesh
+- [ ] Alpha blending wrong?
+- [ ] Gizmo
 
 # TODO
 - [ ] Skinning 
